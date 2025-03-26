@@ -1,0 +1,107 @@
+@startuml ood-lab1
+
+class Game {
+    -map: HashMap<Vector2D, Player>
+    -roundCounter: int
+    -currentPlayer: Player
+    -isRunning: bool
+
+    +move(player: Player, position: Vector2D)
+    +newRound()
+    +run()
+    +stop()
+}
+
+
+class Vector2D {
+    -x: int
+    -y: int
+}
+
+class Player {
+    -name: String
+    -strength: int
+    -mana: int
+    -health: int
+    -experience: int
+    -equipment: Equipment
+    -weapon: Weapon
+
+    +getArmor()
+    +getStrength()
+    +getDamage()
+}
+
+class SpellsEngine {
+    -spells: List<Spell>
+    +getRandomSpell(player: Player) {static}
+}
+
+class Round {
+    -currentPlayer: Player
+
+    +physicalAttack(targetPlayer: Player)
+    +spellAttack(targetPlayer: Player)
+    +addExperience(player: Player)
+}
+
+class Equipment {
+    -slots: int
+    -equipped: List<Equipable>
+    -backpack: List<Equipable>
+    +equip(item: Equipable)
+}
+
+interface Equipable {
+    -name: String
+    -slotsRequired: int
+    +getSlotsRequired()
+}
+
+class Weapon{
+    -name: String
+    -slotsRequired: int
+    -damage: int
+
+    +getDamage()
+}
+
+class Armor {
+    -name: String
+    -slotsRequired: int
+    -armor: int
+
+    +getArmor()
+}
+
+class Shield {
+    -name: String
+    -slotsRequired: int
+    -armor: int
+
+    +getArmor()
+}
+
+class Spell {
+    -power: int
+    -manaCost: int
+
+    +getCost()
+    +getPower()
+}
+
+
+
+
+Weapon ..|> Equipable
+Armor ..|> Equipable
+Shield ..|> Equipable
+Equipment --- Equipable
+SpellsEngine *-- Spell
+Player *-- Equipment
+Player *-- Weapon
+Round o-- SpellsEngine
+Round o-- Player
+Game o-- Round
+Game --> Vector2D
+@enduml
