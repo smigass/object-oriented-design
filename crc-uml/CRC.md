@@ -37,7 +37,7 @@
     <td>- Game (do śledzenia pozycji graczy)</td>
   </tr>
 </table>
----
+
 <div style="page-break-before: always;"></div>
 
 ## Player
