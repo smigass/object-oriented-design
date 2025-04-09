@@ -8,54 +8,105 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import pl.edu.agh.dronka.shop.controller.ShopController;
+import pl.edu.agh.dronka.shop.model.Item;
 import pl.edu.agh.dronka.shop.model.filter.ItemFilter;
+import pl.edu.agh.dronka.shop.model.items.BookItem;
+import pl.edu.agh.dronka.shop.model.items.ElectronicsItem;
+import pl.edu.agh.dronka.shop.model.items.MusicItem;
 
 public class PropertiesPanel extends JPanel {
 
-	private static final long serialVersionUID = -2804446079853846996L;
-	private ShopController shopController;
+    private static final long serialVersionUID = -2804446079853846996L;
+    private ShopController shopController;
 
-	private ItemFilter filter = new ItemFilter();
+    private ItemFilter filter = new ItemFilter(new Item());
 
-	public PropertiesPanel(ShopController shopController) {
-		this.shopController = shopController;
-		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-	}
+    public PropertiesPanel(ShopController shopController) {
+        this.shopController = shopController;
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    }
 
-	public void fillProperties() {
-		removeAll();
+    public void fillProperties() {
+        removeAll();
 
-		filter.getItemSpec().setCategory(shopController.getCurrentCategory());
-		add(createPropertyCheckbox("Tanie bo polskie", new ActionListener() {
+        switch (shopController.getCurrentCategory()) {
+            case BOOKS -> filter = new ItemFilter(new BookItem());
+            case ELECTRONICS -> filter = new ItemFilter(new ElectronicsItem());
+            case MUSIC -> filter = new ItemFilter(new MusicItem());
+            default -> filter = new ItemFilter(new Item());
+        }
 
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				filter.getItemSpec().setPolish(
-						((JCheckBox) event.getSource()).isSelected());
-				shopController.filterItems(filter);
-			}
-		}));
+        filter.itemSpec().setCategory(shopController.getCurrentCategory());
+        add(createPropertyCheckbox("Tanie bo polskie", new ActionListener() {
 
-		add(createPropertyCheckbox("Używany", new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                filter.itemSpec().setPolish(
+                        ((JCheckBox) event.getSource()).isSelected());
+                shopController.filterItems(filter);
+            }
+        }));
 
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				filter.getItemSpec().setSecondhand(
-						((JCheckBox) event.getSource()).isSelected());
-				shopController.filterItems(filter);
-			}
-		}));
+        add(createPropertyCheckbox("Używany", new ActionListener() {
 
-	}
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                filter.itemSpec().setSecondhand(
+                        ((JCheckBox) event.getSource()).isSelected());
+                shopController.filterItems(filter);
+            }
+        }));
 
-	private JCheckBox createPropertyCheckbox(String propertyName,
-			ActionListener actionListener) {
+        switch (shopController.getCurrentCategory()) {
+            case BOOKS -> add(createPropertyCheckbox("Twadra oprawa", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    ((BookItem) filter.itemSpec()).setHardCover(
+                            ((JCheckBox) event.getSource()).isSelected());
+                    shopController.filterItems(filter);
+                }
+            }));
+            case ELECTRONICS -> {
+                add(createPropertyCheckbox("Mobilny", new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        ((ElectronicsItem) filter.itemSpec()).setMobile(
+                                ((JCheckBox) event.getSource()).isSelected());
+                        shopController.filterItems(filter);
+                    }
 
-		JCheckBox checkBox = new JCheckBox(propertyName);
-		checkBox.setSelected(false);
-		checkBox.addActionListener(actionListener);
+                }));
+                add(createPropertyCheckbox("Gwarancja", new ActionListener() {
 
-		return checkBox;
-	}
+                    @Override
+                    public void actionPerformed(ActionEvent event) {
+                        ((ElectronicsItem) filter.itemSpec()).setWarranty(
+                                ((JCheckBox) event.getSource()).isSelected());
+                        shopController.filterItems(filter);
+                    }
+                }));
+            }
+            case MUSIC -> add(createPropertyCheckbox("Dołączone wideo", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent event) {
+                    ((MusicItem) filter.itemSpec()).setHasVideo(
+                            ((JCheckBox) event.getSource()).isSelected());
+                    shopController.filterItems(filter);
+                }
+            }));
+
+        }
+
+    }
+
+    private JCheckBox createPropertyCheckbox(String propertyName,
+                                             ActionListener actionListener) {
+
+        JCheckBox checkBox = new JCheckBox(propertyName);
+        checkBox.setSelected(false);
+        checkBox.addActionListener(actionListener);
+
+        return checkBox;
+    }
 
 }

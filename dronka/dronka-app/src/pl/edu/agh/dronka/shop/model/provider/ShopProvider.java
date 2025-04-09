@@ -1,6 +1,8 @@
 package pl.edu.agh.dronka.shop.model.provider;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ import pl.edu.agh.dronka.shop.model.Index;
 import pl.edu.agh.dronka.shop.model.Item;
 import pl.edu.agh.dronka.shop.model.Shop;
 import pl.edu.agh.dronka.shop.model.User;
+import pl.edu.agh.dronka.shop.model.items.*;
 
 public class ShopProvider {
 
@@ -82,7 +85,33 @@ public class ShopProvider {
 				item.setPolish(isPolish);
 				item.setSecondhand(isSecondhand);
 
-				items.add(item);
+				Item finalItem = switch (item.getCategory()) {
+					case BOOKS -> new BookItem(
+							item,
+							Integer.parseInt(reader.getValue(dataLine, "Liczba stron")),
+							Boolean.parseBoolean(reader.getValue(dataLine, "Twarda oprawa"))
+					);
+					case ELECTRONICS -> new ElectronicsItem(
+							item,
+							Boolean.parseBoolean(reader.getValue(dataLine, "Mobilny")),
+							Boolean.parseBoolean(reader.getValue(dataLine, "Gwarancja"))
+					);
+					case FOOD -> new FoodItem(
+							item,
+							LocalDate.parse(reader.getValue(dataLine, "Data spożycia").trim(),
+									DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+					case MUSIC -> new MusicItem(
+							item,
+							MusicGenre.fromString(reader.getValue(dataLine, "Gatunek muzyczny")),
+							Boolean.parseBoolean(reader.getValue(dataLine, "Dołączone wideo"))
+					);
+
+					default -> item;
+				};
+
+				items.add(finalItem);
+
+
 
 			}
 

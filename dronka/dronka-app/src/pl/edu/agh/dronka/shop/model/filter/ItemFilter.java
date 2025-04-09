@@ -1,14 +1,13 @@
 package pl.edu.agh.dronka.shop.model.filter;
 
 import pl.edu.agh.dronka.shop.model.Item;
+import pl.edu.agh.dronka.shop.model.items.BookItem;
+import pl.edu.agh.dronka.shop.model.items.ElectronicsItem;
+import pl.edu.agh.dronka.shop.model.items.MusicItem;
 
-public class ItemFilter {
+public record ItemFilter(Item itemSpec) {
 
-	private Item itemSpec = new Item();
 
-	public Item getItemSpec() {
-		return itemSpec;
-	}
 	public boolean appliesTo(Item item) {
 		if (itemSpec.getName() != null
 				&& !itemSpec.getName().equals(item.getName())) {
@@ -19,14 +18,34 @@ public class ItemFilter {
 			return false;
 		}
 
-		// applies filter only if the flag (secondHand) is true)
 		if (itemSpec.isSecondhand() && !item.isSecondhand()) {
 			return false;
 		}
 
-		// applies filter only if the flag (polish) is true)
 		if (itemSpec.isPolish() && !item.isPolish()) {
 			return false;
+		}
+
+
+		switch (itemSpec.getCategory()) {
+			case BOOKS -> {
+				if (((BookItem) itemSpec).isHardCover() && !((BookItem) item).isHardCover()) {
+					return false;
+				}
+			}
+			case ELECTRONICS -> {
+				if (((ElectronicsItem) itemSpec).hasWarranty() && !((ElectronicsItem) item).hasWarranty()) {
+					return false;
+				}
+
+				if (((ElectronicsItem) itemSpec).isMobile() && !((ElectronicsItem) item).isMobile()) {
+					return false;
+				}
+			}
+			case MUSIC -> {
+				if (((MusicItem) itemSpec).hasVideo() && !((MusicItem) item).hasVideo())
+					return false;
+			}
 		}
 
 		return true;
