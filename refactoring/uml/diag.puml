@@ -1,0 +1,51 @@
+@startuml ood-lab4
+
+class Finder {
+    - allPersons: Collection<Person> 
+    - allPrisoners: Map<String, Collection<Prisoner>> 
+
+    + displayAllSuspectsWithName(String name)
+}
+
+class Person {
+    - firstname: String
+    - lastname: String
+    - age: int
+
+    + getAge()
+    + firstname()
+    + middlename()
+    + display()
+}
+
+class PersonDataProvider {
+    - cracovCitizens : Collection<Person>
+
+    + getAllCracovCitizens() 
+}
+
+class Prisoner {
+    - judgementYear: int
+    - senteceDuration: int
+    - pesel: String
+    - name: String
+    - surname: String
+
+    + getPesel()
+    + czyMoglbyEwentualnieBycPodejrzany()
+    + getCurrentYear()
+}
+
+class PrisonersDatabase {
+    - prisoners: Map<String, Collection<Prisoner>>
+
+    + findAll()
+    + getAllPrisons()
+    + addPrisoner(String category, Prisoner prisoner)
+    + render(Prisoner prisoner)
+}
+
+Finder -- PersonDataProvider
+Finder -- PrisonersDatabase
+PersonDataProvider o-- Person
+PrisonersDatabase o-- Prisoner

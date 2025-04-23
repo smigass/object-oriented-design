@@ -1,2 +1,6 @@
 .DS_Store
 .vscode
+refactoring/.idea
+refactoring/out
+refactoring/*.iml
+**.zip
